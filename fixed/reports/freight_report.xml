@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <report
+            id="fixed.freight_bills"
+            model="fixed.freight_bill"
+            string="打印货单"
+            report_type="qweb-pdf"
+            name="fixed.report_freight_with_bills"
+            file="fixed.report_freight_with_bills"
+        />
+        <template id="report_freight_with_bills">
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <!--<t t-set="o" t-value="o.with_context(lang=lang)"/>-->
+                    <t t-foreach="docs" t-as="o">
+                        <div class="page">
+                            <h2 class="text-center">
+                                <span t-field="o.partner_id"/>
+                                <span>的货单明细</span>
+                            </h2>
+                            <div id="information" class="row mt32 mb32">
+                                <div class="col-auto mw-300 mb-2" t-if="o.date_invoice" name="date_invoice">
+                                    <strong>开票日期:</strong>
+                                    <p class="m-0" t-field="o.date_invoice"/>
+                                </div>
+                                <div class="col-auto mw-300 mb-2" t-if="o.salesclerk" name="salesclerk">
+                                    <strong>销售员:</strong>
+                                    <p class="m-0" t-field="o.salesclerk"/>
+                                </div>
+                            </div>
+
+                            <table class="table table-sm o_main_table" name="freight_line_table">
+                                <thead>
+                                    <tr>
+                                        <!-- TODO: remove in master -->
+                                        <t t-set="colspan" t-value="6"/>
+                                        <th name="th_product_id" class="text-left">
+                                            <span>产品名称</span>
+                                        </th>
+                                        <th name="th_goods_number" class="text-left">
+                                            <span>货号</span>
+                                        </th>
+                                        <th name="th_length_of_the_goods" class="text-right">
+                                            <span>高度(米)</span>
+                                        </th>
+                                        <th name="th_width_of_the_goods"  class="text-right">
+                                            <span>宽度(米)</span>
+                                        </th>
+                                        <th name="th_area_of_the_goods" class="text-right">
+                                            <span>面积(平方米)</span>
+                                        </th>
+                                        <th name="th_unit_price" class="text-right">
+                                            <span>单价(平方米/元)</span>
+                                        </th>
+                                        <th name="th_remark" class="text-center">
+                                            <span>备注</span>
+                                        </th>
+                                        <th name="th_total_prices" class="text-right">
+                                            <span>总价</span>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="freight_tbody">
+                                    <t t-set="current_subtotal" t-value="0.00"/>
+                                    <t t-foreach="o.freight_line_ids" t-as="line">
+                                        <t t-set="current_subtotal" t-value="current_subtotal + line.total_prices"/>
+                                        <tr t-att-class="'bg-200 font-weight-bold'">
+                                            <t>
+                                                <td class="text-center">
+                                                    <span t-field="line.product_id"/>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span t-field="line.goods_number"/>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span t-field="line.length_of_the_goods"/>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span t-field="line.width_of_the_goods"/>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span t-field="line.area_of_the_goods"/>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span t-field="line.unit_price"/>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span t-field="line.remark"/>
+                                                </td>
+                                                <td class="text-right">
+                                                    <span t-field="line.total_prices"/>
+                                                </td>
+                                            </t>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                            <div class="clearfix">
+                                <div id="total" class="row">
+                                    <div t-attf-class="#{'col-4' if report_type != 'html' else 'col-sm-7 col-md-5'} ml-auto">
+                                        <table class="table table-sm" style="page-break-inside: avoid;">
+                                            <tr class="border-black o_subtotal" style="">
+                                                <td>
+                                                    <strong>总计</strong>
+                                                </td>
+                                                <t t-set="current_subtotal" t-value="'%.2f' % current_subtotal"/>
+                                                <td class="text-right">
+                                                    <span t-esc="current_subtotal"/>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+        <template id="report_freight">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-set="lang" t-value="o.partner_id.lang"/>
+                    <t t-cal="fixed.report_freight_with_bills" t-lang="lang"/>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

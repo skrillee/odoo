@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record id="module_category_fixed" model="ir.module.category">
+            <field name="name">货单管理</field>
+        </record>
+        <record id="group_fixed_user" model="res.groups">
+            <field name="name">用户</field>
+            <field name="implied_ids" eval="[(4,ref('base.group_user'))]"/>
+            <field name="category_id" ref="fixed.module_category_fixed"/>
+            <field name="users" eval="[(4,ref('base.user_root'))]"/>
+        </record>
+        <record id="group_fixed_user" model="res.groups">
+            <field name="name">管理员</field>
+            <field name="implied_ids" eval="[(4,ref('base.group_user')),(4,ref('fixed.group_fixed_user'))]"/>
+            <field name="category_id" ref="fixed.module_category_fixed"/>
+            <field name="users" eval="[(4,ref('base.user_root'))]"/>
+        </record>
+    </data>
+</odoo>

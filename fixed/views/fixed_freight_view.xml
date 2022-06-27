@@ -1,0 +1,119 @@
+<odoo>
+    <data>
+        <!--tree account_invoice_view.xml 152tree 409form-->
+        <record id="freight_bill_tree" model="ir.ui.view">
+            <field name="name">freight.bill.tree</field>
+            <field name="model">fixed.freight_bill</field>
+            <field name="arch" type="xml">
+                <tree string="Invoice">
+                    <field name="partner_id"/>
+                    <field name="salesclerk"/>
+                    <field name="date_invoice"/>
+                    <field name="amount_total_signed" string="总计" sum="Total"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="state" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_freight_graph">
+            <field name="name">account.freight.graph</field>
+            <field name="model">fixed.freight_bill</field>
+            <field name="arch" type="xml">
+                <graph string="货单">
+                    <field name="partner_id"/>
+                    <field name="amount_total_signed" type="measure"/>
+                </graph>
+            </field>
+        </record>
+        
+        <record id="freight_bill_form" model="ir.ui.view">
+            <field name="name">freight.bill.form</field>
+            <field name="model">fixed.freight_bill</field>
+            <field name="arch" type="xml">
+                <form string="Invoice">
+                <sheet string="Invoice">
+                        <group name="group_top" col="2">
+                            <group name="group_left">
+                                <field name="partner_id" widget="res_partner_many2one"
+                                    context="{'search_default_customer':1,'default_is_company': True}"
+                                    options='{"always_reload": True, "no_quick_create": True}'
+                                    domain="[('customer','=',True)]"
+                                    required="1"
+                                />
+                                <field name="date_invoice"/>
+                            </group>
+                            <group name="group_right">
+                                <field name="salesclerk"/>
+                            </group>
+                        </group>
+                        <field name="state" invisible="1"/>
+                        <notebook colspan="4">
+                            <page string="货单明细行">
+                                <field
+                                    name="freight_line_ids"
+                                    nolabel="1"
+                                    widget="section_and_note_one2many"
+                                    mode="tree"
+                                    attrs="{'readonly':[('state','not in',('open',))]}">
+                                >
+                                    <tree string="Freight Lines" editable="bottom">
+                                        <control>
+                                            <create string="添加货单行"/>
+                                        </control>
+                                        <field name="product_id"/>
+                                        <field name="goods_number"/>
+                                        <field name="length_of_the_goods"/>
+                                        <field name="width_of_the_goods"/>
+                                        <field name="area_of_the_goods"/>
+                                        <field name="unit_price"/>
+                                        <field name="total_prices"/>
+                                        <field name="currency_id" invisible="1"/>
+                                        <field name="remark"/>
+                                    </tree>
+                                </field>
+                                <group class="oe_subtotal_footer oe_right">
+                                    <field name="amount_total"/>
+                                    <field name="currency_id" invisible="1"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!--tree 685 view_id:为action制定了一个view-->
+        <record id="action_freight_tree" model="ir.actions.act_window">
+            <field name="name">Freight Bill</field>
+            <field name="res_model">fixed.freight_bill</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form,graph</field>
+            <field name="view_id" ref="freight_bill_tree"/>
+        </record>
+
+        <!--tree 731-->
+        <record id="action_freight_tree_view1" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="act_window_id" ref="action_freight_tree"/>
+        </record>
+
+        <!--form 737-->
+        <record id="action_freight_tree_view2" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="freight_bill_form"/>
+            <field name="act_window_id" ref="action_freight_tree"/>
+        </record>
+
+        <!-- Top menu item-->
+        <menuitem name="货单管理" id="fixed.menu_root"/>
+
+        <!--menu categories-->
+        <menuitem name="货单管理" id="fixed.menu_1" parent="fixed.menu_root"/>
+
+        <!--actions-->
+        <menuitem name="货单管理" id="fixed.menu_1_list" parent="fixed.menu_1" action="action_freight_tree"/>
+    </data>
+</odoo>
